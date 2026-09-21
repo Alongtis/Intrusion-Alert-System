@@ -63,7 +63,34 @@ v
 | **Button Right** | Data Pin | GPIO 4 | Active LOW (Internal Pull-up) |
 | **Button Up** | Data Pin | GPIO 16 | Active LOW (Internal Pull-up) |
 | **Button Action** | Data Pin | GPIO 17 | Active LOW (Internal Pull-up) |
+```mermaidflowchart TB
+    subgraph NODE1["Node 1: Transmitter (STA)"]
+        direction TB
+        ESP1["ESP32 Core (Node 1)"]
+        US["Ultrasonic HC-SR04"] -->|ECHO via Divider| ESP1
+        ESP1 -->|TRIG| US
+        POT["Potentiometer"] -->|Threshold ADC| ESP1
+        BTN["4x Push Buttons"] -->|GPIO Control| ESP1
+        ESP1 -->|I2C Bus 0| OLED1["OLED 1 (Radar)"]
+        ESP1 -->|I2C Bus 1| OLED2["OLED 2 (Keyboard)"]
+        ESP1 -->|Alert Pin| LED["LED Indicator"]
+    end
 
+    subgraph NODE2["Node 2: Receiver (AP)"]
+        direction TB
+        ESP2["ESP32 Core (Node 2)"]
+        ESP2 -->|I2C Bus| OLED_RX["OLED (Received Msg)"]
+        ESP2 -->|GPIO 14| BUZZ["Buzzer Driver"]
+    end
+
+    ESP1 -.->|"Wi-Fi HTTP GET (/send?code=...)"| ESP2
+
+    classDef mcu fill:#1f77b4,stroke:#fff,stroke-width:2px,color:#fff;
+    classDef display fill:#ff7f0e,stroke:#fff,stroke-width:1px,color:#fff;
+    classDef sensor fill:#2ca02c,stroke:#fff,stroke-width:1px,color:#fff;
+    class ESP1,ESP2 mcu;
+    class OLED1,OLED2,OLED_RX display;
+    class US,POT,BTN,LED,BUZZ sensor;```mermaid
 ### Node 2: Receiver (ตัวรับ)
 | อุปกรณ์ / เซนเซอร์ | ขาอุปกรณ์ | ขา ESP32 (GPIO) | หมายเหตุ |
 | :--- | :--- | :--- | :--- |
