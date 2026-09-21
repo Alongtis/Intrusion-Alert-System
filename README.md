@@ -1,32 +1,39 @@
-## Intrusion-Alert-System
-#### Project: CPE-213
-----------------------------------------------------------------------------------------------------------------------
-# Overview
+# 📡 ESP32 Dual-Node Morse Communication & Ultrasonic Radar System
 
 ระบบสื่อสารรหัสมอร์สไร้สายและตรวจจับสิ่งกีดขวางระยะใกล้ด้วย ESP32 จำนวน 2 บอร์ด โดยแบ่งการทำงานเป็นโหนดส่งข้อมูล (**Transmitter Node**) ที่มาพร้อมคีย์บอร์ดเสมือนและเรดาร์อัลตราโซนิก และโหนดรับข้อมูล (**Receiver Node**) ที่ทำหน้าที่เป็น Wi-Fi Access Point ถอดรหัสและแสดงสัญญาณเสียง/ภาพ
 
 ---
 
 ## 📌 ภาพรวมสถาปัตยกรรมระบบ (System Architecture)
-+-------------------------------------------------------------+
-|              Node 1: Transmitter (Client / STA)             |
-|                                                             |
-|  [Ultrasonic + Pot] ----> Distance Check ----> Trigger SOS  |
-|  [4x Buttons]       ----> Virtual Keyboard -> Send Morse    |
-|  [Dual OLED]        ----> Radar (0x3C) & UI (0x3C via 2-Bus)|
-+-------------------------------------------------------------+
-|
-HTTP GET via Wi-Fi AP
-(Endpoint: /send?code=...)
-v
-+-------------------------------------------------------------+
-|               Node 2: Receiver (Server / AP)                |
-|                                                             |
-|  [SoftAP Mode]      ----> "ESP32-Morse" (192.168.4.1)       |
-|  [Web Server]       ----> Instant 200 OK (Non-blocking)     |
-|  [Buzzer]           ----> Dot/Dash Sound Playback           |
-|  [Single OLED]      ----> Step-by-Step & Full Message       |
-+-------------------------------------------------------------+
+
+```mermaid
+flowchart TD
+    subgraph NODE1["Node 1: Transmitter (STA)"]
+        ESP1["ESP32 Core (Node 1)"]
+        POT["Potentiometer"] -->|Threshold ADC| ESP1
+        BTN["4x Push Buttons"] -->|GPIO Control| ESP1
+        ESP1 -->|TRIG| US["Ultrasonic HC-SR04"]
+        US -->|ECHO via Divider| ESP1
+        ESP1 -->|I2C Bus 0| OLED1["OLED 1 (Radar)"]
+        ESP1 -->|I2C Bus 1| OLED2["OLED 2 (Keyboard)"]
+        ESP1 -->|Alert Pin| LED["LED Indicator"]
+    end
+
+    NODE1 ==>|"Wi-Fi HTTP GET (/send?code=...)"| NODE2
+
+    subgraph NODE2["Node 2: Receiver (AP)"]
+        ESP2["ESP32 Core (Node 2)"]
+        ESP2 -->|I2C Bus| OLED_RX["OLED (Received Msg)"]
+        ESP2 -->|GPIO 14| BUZZ["Buzzer Driver"]
+    end
+
+    classDef mcu fill:#1f77b4,stroke:#fff,stroke-width:2px,color:#fff;
+    classDef display fill:#ff7f0e,stroke:#fff,stroke-width:1px,color:#fff;
+    classDef sensor fill:#2ca02c,stroke:#fff,stroke-width:1px,color:#fff;
+    class ESP1,ESP2 mcu;
+    class OLED1,OLED2,OLED_RX display;
+    class US,POT,BTN,LED,BUZZ sensor;
+```
 
 
 ---
@@ -36,7 +43,7 @@ v
 ### 1. โหนดส่ง (Transmitter Node)
 - **Virtual Keyboard (OLED 2):** เลือกตัวอักษร A-Z, 0-9 และ Backspace ด้วยระบบ 4 ปุ่มกด
   - กดสั้นเพื่อพิมพ์ / กดค้างที่ปุ่ม Action (> 800ms) เพื่อส่งข้อความ
-- **Dynamic Wi-Fi Status Icon:** แสดงสถานะการเชื่อมต่อ Wi-Fi และระดับ RSSI แบบเรียลไทม์ที่มุมขวาบนของหน้าจอ
+- **Dynamic Wi-Fi Status Icon:** แสดงสถานะการเชื่อมต่อ Wi-Fi และระดับ RSSI แบบเรียลไทม์ที่มุมขวาบนของหน้าจอ (ไอคอนจะหายไปทันทีเมื่อสัญญาณขาดหาย)
 - **Ultrasonic Radar & Auto-SOS (OLED 1):** 
   - วัดระยะด้วย HC-SR04 และปรับค่า Threshold ผ่าน Potentiometer
   - ส่งรหัสฉุกเฉิน `... --- ...` (SOS) ไปยังโหนดรับอัตโนมัติทันที 1 ครั้งเมื่อมีวัตถุกีดขวางระยะปลอดภัย
@@ -57,11 +64,11 @@ v
 ### Node 1: Transmitter (ตัวส่ง)
 | อุปกรณ์ / เซนเซอร์ | ขาอุปกรณ์ | ขา ESP32 (GPIO) | หมายเหตุ |
 | :--- | :--- | :--- | :--- |
-| **OLED 1 (Radar)** | SDA / SCL | GPIO 21 / GPIO 22 | I2C Bus 0 (Address: 0x3C) |
-| **OLED 2 (Keyboard)** | SDA / SCL | GPIO 18 / GPIO 19 | I2C Bus 1 (Address: 0x3C) |
-| **HC-SR04** | TRIG / ECHO | GPIO 13 / GPIO 12 | Ultrasonic Distance Sensor |
-| **Potentiometer** | Output Pin | GPIO 34 | Analog In (ADC1_CH6) |
-| **Alert LED** | Anode (+) | GPIO 5 | ผ่านตัวต้านทาน 220-330Ω |
+| **OLED 1 (Radar)** | SDA / SCL | GPIO 21 / GPIO 22 | I2C Bus 0 (Address: `0x3C`) |
+| **OLED 2 (Keyboard)** | SDA / SCL | GPIO 18 / GPIO 19 | I2C Bus 1 (Address: `0x3C`) |
+| **HC-SR04** | TRIG / ECHO | GPIO 13 / GPIO 12 | ECHO ผ่าน Voltage Divider (1kΩ / 2kΩ) |
+| **Potentiometer** | Output Pin | GPIO 34 | Analog In (ADC1_CH6) ช่วงแรงดัน 0-3.3V |
+| **Alert LED** | Anode (+) | GPIO 5 | ต่ออนุกรมตัวต้านทาน 220-330Ω |
 | **Button Left** | Data Pin | GPIO 15 | Active LOW (Internal Pull-up) |
 | **Button Right** | Data Pin | GPIO 4 | Active LOW (Internal Pull-up) |
 | **Button Up** | Data Pin | GPIO 16 | Active LOW (Internal Pull-up) |
@@ -70,8 +77,8 @@ v
 ### Node 2: Receiver (ตัวรับ)
 | อุปกรณ์ / เซนเซอร์ | ขาอุปกรณ์ | ขา ESP32 (GPIO) | หมายเหตุ |
 | :--- | :--- | :--- | :--- |
-| **OLED (Display)** | SDA / SCL | GPIO 21 / GPIO 22 | I2C Default Bus (Address: 0x3C) |
-| **Buzzer** | Positive (+) | GPIO 14 | Active หรือ Passive Buzzer |
+| **OLED (Display)** | SDA / SCL | GPIO 21 / GPIO 22 | I2C Default Bus (Address: `0x3C`) |
+| **Buzzer** | Positive (+) | GPIO 14 | ต่อผ่านทรานซิสเตอร์ขับโหลด หรือต่อโมดูล Active Buzzer |
 
 ---
 
@@ -81,7 +88,7 @@ v
 - `Adafruit SSD1306` (โดย Adafruit)
 - `Adafruit GFX Library` (โดย Adafruit)
 - `ezButton` (โดย ArduinoGetStarted)
-- `WiFi` & `WebServer` & `HTTPClient` (มีมาพร้อมกับบอร์ด ESP32 Core)
+- `WiFi`, `WebServer`, `HTTPClient` (มีมาพร้อมกับบอร์ด ESP32 Core)
 
 ---
 
@@ -94,26 +101,11 @@ v
    - เริ่มการทำงานของ Node 2 ก่อน เพื่อให้ระบบเริ่มกระจายสัญญาณ Hotspot `ESP32-Morse`
    - เปิด Node 1 บอร์ดจะทำการต่อ Wi-Fi เข้ากับ Node 2 อัตโนมัติ (สังเกตไอคอน Wi-Fi มุมขวาบนของ OLED 2)
 3. **การส่งข้อความ:**
-   - เลื่อนปุ่มเลือกตัวอักษร แล้วกดปุ่ม Action สั้นๆ เพื่อป้อนตัวอักษรเข้า Buffer
+   - เลื่อนปุ่มซ้าย/ขวา/ขึ้น เพื่อเลือกตัวอักษร
+   - กดปุ่ม Action สั้นๆ เพื่อพิมพ์ตัวอักษรลง Buffer
    - กดปุ่ม Action ค้างไว้ 800 ms เพื่อส่งข้อความทั้งหมด
 <video src="https://githubusercontent.com" width="100%" autoplay loop muted></video>
 
 5. **การทำงานของระบบความปลอดภัย:**
    - ปรับ Potentiometer เพื่อตั้งระยะ Threshold (5 - 50 cm)
    - หากระยะที่วัดได้ต่ำกว่าเกณฑ์ ไฟ LED บนตัวส่งจะเริ่มกะพริบรหัส SOS พร้อมยิงสัญญาณเตือนภัยไปยัง Node 2 ทันที
-
-## IMAGE HARDWARE
-<img width="3072" height="4080" alt="Node 1 Transmitter" src="https://github.com/user-attachments/assets/32a707c5-ddec-46e0-829f-806725102c35" />
-<img width="2276" height="3020" alt="Node 2 Receiver" src="https://github.com/user-attachments/assets/2f4e68d8-11ab-4fdd-b42a-5be6008c924b" />
-
---------------------------------------------------------------------------------
-
-## Video Demonstration
-
-
-https://github.com/user-attachments/assets/6cf24224-a0fb-4488-9bad-6ed21e289395
-
-
-
-
-
