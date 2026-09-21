@@ -35,11 +35,6 @@ flowchart TD
     class US,POT,BTN,LED,BUZZ sensor;
 ```
 
-## ✨ ภาพชิ้นงาน (picture of actual hardware)
-### Node 1: Transmitter (ตัวส่ง)
-<img width="3072" height="4080" alt="Node 1 Transmitter" src="https://github.com/user-attachments/assets/23dc6841-2766-4ebd-8675-96850aa5dbe6" />
-### Node 2: Receiver (ตัวรับ)
-<img width="2276" height="3020" alt="Node 2 Receiver" src="https://github.com/user-attachments/assets/c40791d3-2793-46c5-96dc-500e934a22ca" />
 
 ---
 
@@ -112,3 +107,11 @@ flowchart TD
 4. **การทำงานของระบบความปลอดภัย:**
    - ปรับ Potentiometer เพื่อตั้งระยะ Threshold (5 - 50 cm)
    - หากระยะที่วัดได้ต่ำกว่าเกณฑ์ ไฟ LED บนตัวส่งจะเริ่มกะพริบรหัส SOS พร้อมยิงสัญญาณเตือนภัยไปยัง Node 2 ทันที 1 ครั้ง
+
+---
+## ✨ ภาพชิ้นงาน (picture of actual hardware)
+### Node 1: Transmitter (ตัวส่ง)
+<img width="3072" height="4080" alt="Node 1 Transmitter" src="https://github.com/user-attachments/assets/23dc6841-2766-4ebd-8675-96850aa5dbe6" />
+### Node 2: Receiver (ตัวรับ)
+<img width="2276" height="3020" alt="Node 2 Receiver" src="https://github.com/user-attachments/assets/c40791d3-2793-46c5-96dc-500e934a22ca" />
+
