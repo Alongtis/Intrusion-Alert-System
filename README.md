@@ -107,11 +107,12 @@ flowchart TD
 4. **การทำงานของระบบความปลอดภัย:**
    - ปรับ Potentiometer เพื่อตั้งระยะ Threshold (5 - 50 cm)
    - หากระยะที่วัดได้ต่ำกว่าเกณฑ์ ไฟ LED บนตัวส่งจะเริ่มกะพริบรหัส SOS พร้อมยิงสัญญาณเตือนภัยไปยัง Node 2 ทันที 1 ครั้ง
+<img width="2276" height="2181" alt="Node 2 Receiver" src="https://github.com/user-attachments/assets/6a605dfe-c44c-445e-94ee-0afd16aba99d" />
 
 ---
 > ### Node 1: Transmitter (ตัวส่ง)
-> <img src="https://github.com/user-attachments/assets/23dc6841-2766-4ebd-8675-96850aa5dbe6" alt="Node 1 Transmitter" width="450" />
+> <img src="https://github.com/user-attachments/assets/f057abc5-d4f7-40f1-9469-ae2399b05838" alt="Node 1 Transmitter" width="450" />
 >
 > ### Node 2: Receiver (ตัวรับ)
-> <img src="https://github.com/user-attachments/assets/c40791d3-2793-46c5-96dc-500e934a22ca" alt="Node 2 Receiver" width="450" />
+> <img src="https://github.com/user-attachments/assets/6a605dfe-c44c-445e-94ee-0afd16aba99d" alt="Node 2 Receiver" width="450" />
 >
