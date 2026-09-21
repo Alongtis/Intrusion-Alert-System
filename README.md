@@ -101,3 +101,19 @@ v
 5. **การทำงานของระบบความปลอดภัย:**
    - ปรับ Potentiometer เพื่อตั้งระยะ Threshold (5 - 50 cm)
    - หากระยะที่วัดได้ต่ำกว่าเกณฑ์ ไฟ LED บนตัวส่งจะเริ่มกะพริบรหัส SOS พร้อมยิงสัญญาณเตือนภัยไปยัง Node 2 ทันที
+
+## IMAGE HARDWARE
+<img width="3072" height="4080" alt="Node 1 Transmitter" src="https://github.com/user-attachments/assets/32a707c5-ddec-46e0-829f-806725102c35" />
+<img width="2276" height="3020" alt="Node 2 Receiver" src="https://github.com/user-attachments/assets/2f4e68d8-11ab-4fdd-b42a-5be6008c924b" />
+
+--------------------------------------------------------------------------------
+
+## Video Demonstration
+
+
+https://github.com/user-attachments/assets/6cf24224-a0fb-4488-9bad-6ed21e289395
+
+
+
+
+
