@@ -159,21 +159,21 @@ flowchart TD
 flowchart TD
     subgraph NODE1["Node 1: Transmitter (STA Mode)"]
         ESP1["ESP32 Core (Node 1)"]
-        POT["Potentiometer"] -->|Threshold ADC1_CH6| ESP1
-        BTN["4x Push Buttons"] -->|GPIO Control| ESP1
-        ESP1 -->|TRIG Pulse| US["Ultrasonic HC-SR04"]
-        US -->|ECHO via 1k/2k Divider| ESP1
-        ESP1 -->|I2C Bus 0 (GPIO 21/22)| OLED1["OLED 1 (Radar Display 0x3C)"]
-        ESP1 -->|I2C Bus 1 (GPIO 18/19)| OLED2["OLED 2 (Keyboard Display 0x3C)"]
-        ESP1 -->|GPIO 5| LED["Alert LED Indicator"]
+        POT["Potentiometer"] -->|"Threshold ADC1_CH6"| ESP1
+        BTN["4x Push Buttons"] -->|"GPIO Control"| ESP1
+        ESP1 -->|"TRIG Pulse"| US["Ultrasonic HC-SR04"]
+        US -->|"ECHO via 1k/2k Divider"| ESP1
+        ESP1 -->|"I2C Bus 0 (GPIO 21/22)"| OLED1["OLED 1 (Radar Display 0x3C)"]
+        ESP1 -->|"I2C Bus 1 (GPIO 18/19)"| OLED2["OLED 2 (Keyboard Display 0x3C)"]
+        ESP1 -->|"GPIO 5"| LED["Alert LED Indicator"]
     end
 
-    NODE1 ==>|"Wi-Fi 802.11 b/g/n (HTTP GET /send?code=...)"| NODE2
+    NODE1 ==>|"Wi-Fi 802.11 b/g/n (HTTP GET)"| NODE2
 
     subgraph NODE2["Node 2: Receiver (SoftAP Mode)"]
         ESP2["ESP32 Core (Node 2 / Web Server)"]
-        ESP2 -->|I2C Default (GPIO 21/22)| OLED_RX["OLED (Received Message 0x3C)"]
-        ESP2 -->|GPIO 14| BUZZ["Buzzer Driver"]
+        ESP2 -->|"I2C Default (GPIO 21/22)"| OLED_RX["OLED (Received Message 0x3C)"]
+        ESP2 -->|"GPIO 14"| BUZZ["Buzzer Driver"]
     end
 
     classDef mcu fill:#1f77b4,stroke:#fff,stroke-width:2px,color:#fff;
@@ -260,61 +260,3 @@ flowchart TD
 
 ---
 
-## ⚡ แผนภาพวงจรและการเชื่อมต่อ (Circuit Diagram & Schematics)
-
-### 1. วงจรโหนดส่ง (Node 1: Transmitter)
-```
-                          +-------------------------------+
-                          |        ESP32 DevKit V1        |
-                          |                               |
-        [+3.3V] ----------| 3V3                       GND |---------- [GND Common]
-        [+5V Vin] --------| VIN                       EN  |
-                          |                               |
-        OLED 1 (SDA) -----| GPIO 21 (I2C0 SDA)    GPIO 23 |
-        OLED 1 (SCL) -----| GPIO 22 (I2C0 SCL)    GPIO 19 |---------- OLED 2 (SCL)
-                          |                       GPIO 18 |---------- OLED 2 (SDA)
-        HC-SR04 (TRIG) ---| GPIO 13                GPIO 5 |---------- [220Ω] -> LED (+) -> GND
-        HC-SR04 (ECHO)* --| GPIO 12                GPIO 17|---------- SW_Action -> GND
-                          | GPIO 14                GPIO 16|---------- SW_Up     -> GND
-        Potentiometer ----| GPIO 34 (ADC1_CH6)      GPIO 4 |---------- SW_Right  -> GND
-                          | GPIO 35                GPIO 15|---------- SW_Left   -> GND
-                          +-------------------------------+
-
-  *วงจรลดทอนแรงดันสัญญาณ Echo (Voltage Divider):
-   HC-SR04 ECHO (5V Out) ----[ 1kΩ ]----+----> GPIO 12 (รับแรงดัน 3.3V)
-                                        |
-                                     [ 2kΩ ]
-                                        |
-                                       GND
-```
-
-### 2. วงจรโหนดรับ (Node 2: Receiver)
-```
-                          +-------------------------------+
-                          |        ESP32 DevKit V1        |
-                          |                               |
-        [+3.3V] ----------| 3V3                       GND |---------- [GND Common]
-        [+5V Vin] --------| VIN                       EN  |
-                          |                               |
-        OLED (SDA) -------| GPIO 21 (I2C SDA)     GPIO 14 |---------- วงจรขับ Buzzer
-        OLED (SCL) -------| GPIO 22 (I2C SCL)             |
-                          +-------------------------------+
-
-  *วงจรขับ Buzzer ผ่านทรานซิสเตอร์ NPN (ป้องกัน GPIO จ่ายกระแสเกิน):
-              +5V (VIN)
-                 |
-                 +----------+
-                 |          |
-             [ Buzzer ]   [ 1N4148 Diode ] (Flyback Protection)
-                 |          |
-                 +----------+
-                 |
-             C (Collector)
-                 |
-   GPIO 14 ----[ 1kΩ ]---- B (Base) [2N2222 / S8050]
-                 |
-             E (Emitter)
-                 |
-                GND
-
----
