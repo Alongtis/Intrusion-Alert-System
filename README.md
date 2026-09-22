@@ -3,6 +3,11 @@
 ระบบสื่อสารรหัสมอร์สไร้สายและตรวจจับสิ่งกีดขวางระยะใกล้ด้วย ESP32 จำนวน 2 บอร์ด โดยแบ่งการทำงานเป็นโหนดส่งข้อมูล (**Transmitter Node**) ที่มาพร้อมคีย์บอร์ดเสมือนและเรดาร์อัลตราโซนิก และโหนดรับข้อมูล (**Receiver Node**) ที่ทำหน้าที่เป็น Wi-Fi Access Point ถอดรหัสและแสดงสัญญาณเสียง/ภาพ
 
 ---
+## 🚀 Overview
+
+ระบบสื่อสารรหัสมอร์สไร้สายและตรวจจับสิ่งกีดขวางระยะใกล้ด้วย ESP32 จำนวน 2 บอร์ด โดยแบ่งการทำงานเป็นโหนดส่งข้อมูล (**Transmitter Node**) ที่มาพร้อมคีย์บอร์ดเสมือนและเรดาร์อัลตราโซนิก และโหนดรับข้อมูล (**Receiver Node**) ที่ทำหน้าที่เป็น Wi-Fi Access Point ถอดรหัสและแสดงสัญญาณเสียง/ภาพ
+
+---
 
 ## 📌 ภาพรวมสถาปัตยกรรมระบบ (System Architecture)
 
@@ -110,8 +115,35 @@ flowchart TD
 
 ---
 > ### Node 1: Transmitter (ตัวส่ง)
-> <img src="https://github.com/user-attachments/assets/f057abc5-d4f7-40f1-9469-ae2399b05838" alt="Node 1 Transmitter" width="450" />
->
+> <img src="https://github.com/user-attachments/assets/f057abc5-d4f7-40f1-9469-ae2399b05838" alt="Node 1 Transmitter" width="350" />
+
 > ### Node 2: Receiver (ตัวรับ)
-> <img src="https://github.com/user-attachments/assets/6a605dfe-c44c-445e-94ee-0afd16aba99d" alt="Node 2 Receiver" width="450" />
+> <img src="https://github.com/user-attachments/assets/6a605dfe-c44c-445e-94ee-0afd16aba99d" alt="Node 2 Receiver" width="350" />
 >
+## Video Demonstration
+
+<table>
+  <tr>
+    <th width="400">Video 1: Transmission</th>
+  </tr>
+  <tr>
+    <td>
+
+https://github.com/user-attachments/assets/6cf24224-a0fb-4488-9bad-6ed21e289395
+
+    </td>
+  </tr>
+</table>
+
+<table>
+  <tr>
+    <th width="400">Video 2: Reception</th>
+  </tr>
+  <tr>
+    <td>
+
+https://github.com/user-attachments/assets/db6be04e-9f73-46ef-90a6-82b5907f0424
+
+    </td>
+  </tr>
+</table>
