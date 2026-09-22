@@ -48,76 +48,91 @@ flowchart TD
 
 ### 🔄 แผนผังการทำงานเชิงลึก (Detailed Flowcharts)
 
-#### 1. โหนดส่ง (Node 1: Transmitter Logic Flow)
+### 1. โหนดส่ง (Node 1: Transmitter Logic Flow)
+
+<details>
+<summary>🔍 <b>คลิกเพื่อขยายดู Flowchart: Node 1 (Transmitter)</b></summary>
+
+<div align="center">
 
 ```mermaid
 flowchart TD
-    Start1(["เริ่มต้นการทำงาน (Power ON)"]) --> Setup1["กำหนดค่า PinMode, เริ่มต้น I2C0, I2C1<br/>เริ่มจอ OLED ทั้งสองจอ และเชื่อมต่อ Wi-Fi (STA)"]
-    Setup1 --> CheckWiFi{"Wi-Fi เชื่อมต่อสำเร็จ?"}
-    CheckWiFi -- ใช่ --> IconOn["แสดงไอคอน Wi-Fi มุมขวาบนจอ OLED 2"]
-    CheckWiFi -- ไม่ใช่ / หลุด --> IconOff["เคลียร์พื้นที่ไอคอน Wi-Fi บนจอ OLED 2"]
+    Start1(["เริ่มต้นการทำงาน (Power ON)"]) --> Setup1["ตั้งค่า PinMode เริ่มต้น I2C0, I2C1\nเริ่มจอ OLED ทั้งคู่ และต่อ Wi-Fi STA"]
+    Setup1 --> CheckWiFi{"Wi-Fi ต่อสำเร็จ?"}
+    CheckWiFi -- ใช่ --> IconOn["แสดงไอคอน Wi-Fi บนจอ OLED 2"]
+    CheckWiFi -- ไม่ใช่ --> IconOff["ซ่อนไอคอน Wi-Fi บนจอ OLED 2"]
     
-    IconOn --> LoopStart1["เข้าสู่วงรอบการทำงานหลัก (loop)"]
+    IconOn --> LoopStart1["เข้าสู่วงรอบ loop()"]
     IconOff --> LoopStart1
 
-    %% ส่วนการจัดการปุ่มกด
-    LoopStart1 --> ReadButtons["สแกนสถานะปุ่มกด 4 ปุ่ม (ezButton.loop)"]
-    ReadButtons --> CheckLeft{"ปุ่ม Left กด?"}
-    CheckLeft -- ใช่ --> MoveLeft["เลื่อน Cursor ไปทางซ้าย (-1)<br/>อัปเดตหน้าจอคีย์บอร์ด"] --> ReadRadar
-    CheckLeft -- ไม่ใช่ --> CheckRight{"ปุ่ม Right กด?"}
+    %% สแกนปุ่มกด
+    LoopStart1 --> ReadButtons["สแกนปุ่มกด 4 ปุ่ม (ezButton)"]
+    ReadButtons --> CheckLeft{"กดปุ่ม Left?"}
+    CheckLeft -- ใช่ --> MoveLeft["เลื่อนเคอร์เซอร์ไปทางซ้าย (-1)\nอัปเดตหน้าจอคีย์บอร์ด"] --> ReadRadar
+    CheckLeft -- ไม่ใช่ --> CheckRight{"กดปุ่ม Right?"}
     
-    CheckRight -- ใช่ --> MoveRight["เลื่อน Cursor ไปทางขวา (+1)<br/>อัปเดตหน้าจอคีย์บอร์ด"] --> ReadRadar
-    CheckRight -- ไม่ใช่ --> CheckUp{"ปุ่ม Up กด?"}
+    CheckRight -- ใช่ --> MoveRight["เลื่อนเคอร์เซอร์ไปทางขวา (+1)\nอัปเดตหน้าจอคีย์บอร์ด"] --> ReadRadar
+    CheckRight -- ไม่ใช่ --> CheckUp{"กดปุ่ม Up?"}
     
-    CheckUp -- ใช่ --> MoveUp["เลื่อน Cursor ขึ้นแถวบน (-13)<br/>อัปเดตหน้าจอคีย์บอร์ด"] --> ReadRadar
-    CheckUp -- ไม่ใช่ --> CheckAction{"ปุ่ม Action กด?"}
+    CheckUp -- ใช่ --> MoveUp["เลื่อนเคอร์เซอร์ขึ้นแถวบน (-13)\nอัปเดตหน้าจอคีย์บอร์ด"] --> ReadRadar
+    CheckUp -- ไม่ใช่ --> CheckAction{"กดปุ่ม Action?"}
 
-    CheckAction -- กดสั้น --> AppendChar["เพิ่มตัวอักษรลง Buffer (หรือลบถ้าเลือก Backspace)<br/>อัปเดตหน้าจอคีย์บอร์ด"] --> ReadRadar
-    CheckAction -- กดค้าง > 800ms --> SendMsg["แปลงข้อความใน Buffer เป็นสายรหัสมอร์ส<br/>ยิง HTTP GET ไปยัง Node 2<br/>กะพริบไฟ LED ตามรหัสทีละตัว แล้วเคลียร์ Buffer"] --> ReadRadar
+    CheckAction -- "กดสั้น (< 800ms)" --> AppendChar["เพิ่มตัวอักษรลงใน Buffer (หรือลบตัว)\nอัปเดตหน้าจอคีย์บอร์ด"] --> ReadRadar
+    CheckAction -- "กดค้าง (> 800ms)" --> SendMsg["แปลง Buffer เป็นรหัสมอร์ส\nยิง HTTP GET ไปยัง Node 2\nกะพริบไฟ LED แล้วเคลียร์ Buffer"] --> ReadRadar
     CheckAction -- ไม่มีการกด --> ReadRadar
 
-    %% ส่วนเรดาร์และเตือนภัย SOS
-    ReadRadar["อ่านค่า Analog จาก Potentiometer (Threshold)<br/>อ่านระยะทางจาก Ultrasonic HC-SR04"]
+    %% ตรวจวัดระยะ
+    ReadRadar["อ่านค่า Threshold จาก Potentiometer\nวัดระยะจริงจาก Ultrasonic HC-SR04"]
     ReadRadar --> CheckDistance{"ระยะทาง < Threshold?"}
     
-    CheckDistance -- ใช่ (อยู่ในระยะอันตราย) --> TriggerSOS["เริ่มระบบไฟกะพริบ SOS แบบ Non-blocking<br/>แสดงหน้าจอ ALERT SOS บน OLED 1"]
-    TriggerSOS --> CheckSent{"เคยส่ง SOS ไป Node 2 หรือยัง?"}
-    CheckSent -- ยังไม่เคยส่ง --> SendSOSHTTP["ยิง HTTP GET รหัส '... --- ...' ไปยัง Node 2 ทันที 1 ครั้ง<br/>ตั้งค่า Flag sosSentToServer = true"] --> LoopEnd1
-    CheckSent -- ส่งไปแล้ว --> LoopEnd1
+    CheckDistance -- ใช่ --> TriggerSOS["เริ่มไฟกะพริบ SOS แบบ Non-blocking\nแสดงหน้าจอ ALERT SOS บน OLED 1"]
+    TriggerSOS --> CheckSent{"เคยยิง SOS ไปแล้วหรือยัง?"}
+    CheckSent -- ยังไม่เคย --> SendSOSHTTP["ยิง HTTP GET รหัส '... --- ...' ไปยัง Node 2 (1 ครั้ง)\nตั้ง Flag sosSentToServer = true"] --> LoopEnd1
+    CheckSent -- ยิงไปแล้ว --> LoopEnd1
     
-    CheckDistance -- ไม่ใช่ (ปลอดภัย) --> ResetSOS["รีเซ็ต Flag sosSentToServer = false<br/>ดับไฟเตือน และแสดงหน้าจอเรดาร์ปกติบน OLED 1"] --> LoopEnd1
+    CheckDistance -- ไม่ใช่ --> ResetSOS["รีเซ็ต Flag sosSentToServer = false\nดับไฟเตือน และแสดงเรดาร์ปกติบน OLED 1"] --> LoopEnd1
 
-    LoopEnd1["วนกลับไปทำงานต้น loop"] --> LoopStart1
+    LoopEnd1["วนกลับไปต้น loop()"] --> LoopStart1
 ```
+
+</div>
+</details>
 
 ---
 
-#### 2. โหนดรับ (Node 2: Receiver Logic Flow)
+### 2. โหนดรับ (Node 2: Receiver Logic Flow)
+
+<details>
+<summary>🔍 <b>คลิกเพื่อขยายดู Flowchart: Node 2 (Receiver)</b></summary>
+
+<div align="center">
 
 ```mermaid
 flowchart TD
-    Start2(["เริ่มต้นการทำงาน (Power ON)"]) --> Setup2["กำหนด PinMode Buzzer, บัส I2C<br/>เริ่มต้นจอ OLED และเปิด Hotspot Wi-Fi (SoftAP)<br/>ลงทะเบียน HTTP Route: /send"]
-    Setup2 --> LoopStart2["เข้าสู่วงรอบการทำงานหลัก (loop)"]
+    Start2(["เริ่มต้นการทำงาน (Power ON)"]) --> Setup2["ตั้งค่า PinMode ขา Buzzer และบัส I2C\nเริ่มจอ OLED และเปิด SoftAP Wi-Fi\nลงทะเบียน Route: /send"]
+    Setup2 --> LoopStart2["เข้าสู่วงรอบ loop()"]
     
-    LoopStart2 --> CheckClient["server.handleClient() ตรวจสอบ Request"]
-    CheckClient --> HasRequest{"ได้รับ HTTP GET /send?"}
+    LoopStart2 --> CheckClient["server.handleClient() ดักจับ Request"]
+    CheckClient --> HasRequest{"มีคำขอ GET /send เข้ามา?"}
     
-    HasRequest -- ใช่ --> ExtractCode["ดึงค่ารหัสมอร์สจาก Parameter 'code'<br/>เก็บลงตัวแปร pendingMorseData และตั้ง hasNewData = true<br/>ส่ง HTTP 200 OK ตอบกลับตัวส่งทันที (Non-blocking)"] --> ProcessCheck
+    HasRequest -- ใช่ --> ExtractCode["อ่านพารามิเตอร์ 'code'\nเก็บลง pendingMorseData และตั้ง hasNewData = true\nส่ง HTTP 200 OK กลับทันที (Non-blocking)"] --> ProcessCheck
     HasRequest -- ไม่ใช่ --> ProcessCheck{"hasNewData == true?"}
 
-    ProcessCheck -- ใช่ --> StartDecode["เคลียร์สถานะ hasNewData = false<br/>แยกชุดรหัสมอร์สทีละตัว (คั่นด้วย Space)"]
+    ProcessCheck -- ใช่ --> StartDecode["รีเซ็ต hasNewData = false\nแยกคำมอร์สทีละตัว (คั่นด้วย Space)"]
     ProcessCheck -- ไม่ใช่ --> LoopStart2
 
-    StartDecode --> LoopChar["เริ่มวนอ่านทีละตัวอักษร"]
-    LoopChar --> DisplayChar["แสดงตัวอักษรด้านบน (ขนาดใหญ่)<br/>แสดงรหัสมอร์สด้านล่างบนจอ OLED"]
-    DisplayChar --> PlaySound["ขับเสียง Buzzer ตามจังหวะ จุด (.) / ขีด (-)<br/>(หากเป็นช่องว่างให้เว้นเงียบ)"]
-    PlaySound --> Hold1Sec["หน่วงเวลารวมให้ค้างครบ 1 วินาที (1,000 ms) ต่อตัว"]
+    StartDecode --> LoopChar["วนอ่านรหัสทีละตัวอักษร"]
+    LoopChar --> DisplayChar["แสดงตัวอักษรด้านบน (ขนาดใหญ่)\nแสดงรหัสมอร์สด้านล่างบนจอ OLED"]
+    DisplayChar --> PlaySound["ขับเสียง Buzzer ตามจังหวะ จุด/ขีด\n(เว้นเงียบหากเป็นช่องว่าง)"]
+    PlaySound --> Hold1Sec["หน่วงเวลารวมให้ค้างครบ 1 วินาทีต่อตัว"]
     Hold1Sec --> NextChar{"ยังมีตัวอักษรเหลืออยู่ไหม?"}
     
     NextChar -- มี --> LoopChar
-    NextChar -- ครบทุกตัวแล้ว --> FullMessage["ถอดรหัสข้อความเป็นประโยคเต็มสมบูรณ์<br/>แสดงผลข้อความทั้งหมดค้างไว้บนจอ OLED"] --> LoopStart2
+    NextChar -- แสดงครบแล้ว --> FullMessage["ถอดรหัสข้อความเต็มสมบูรณ์\nแสดงผลข้อความทั้งหมดค้างไว้บนจอ OLED"] --> LoopStart2
 ```
 
+</div>
+</details>
 ---
 
 ## ✨ ฟีเจอร์หลัก (Key Features)
