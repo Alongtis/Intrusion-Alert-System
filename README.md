@@ -114,36 +114,16 @@ flowchart TD
    - หากระยะที่วัดได้ต่ำกว่าเกณฑ์ ไฟ LED บนตัวส่งจะเริ่มกะพริบรหัส SOS พร้อมยิงสัญญาณเตือนภัยไปยัง Node 2 ทันที 1 ครั้ง
 
 ---
-> ### Node 1: Transmitter (ตัวส่ง)
-> <img src="https://github.com/user-attachments/assets/f057abc5-d4f7-40f1-9469-ae2399b05838" alt="Node 1 Transmitter" width="350" />
+## 📷 IMAGE HARDWARE
 
-> ### Node 2: Receiver (ตัวรับ)
-> <img src="https://github.com/user-attachments/assets/6a605dfe-c44c-445e-94ee-0afd16aba99d" alt="Node 2 Receiver" width="350" />
->
-## Video Demonstration
+| Node 1: Transmitter (ตัวส่ง) | Node 2: Receiver (ตัวรับ) |
+| :---: | :---: |
+| <img src="https://github.com/user-attachments/assets/32a707c5-ddec-46e0-829f-806725102c35" alt="Node 1 Transmitter" width="380" /> | <img src="https://github.com/user-attachments/assets/2f4e68d8-11ab-4fdd-b42a-5be6008c924b" alt="Node 2 Receiver" width="380" /> |
 
-<table>
-  <tr>
-    <th width="400">Video 1: Transmission</th>
-  </tr>
-  <tr>
-    <td>
+---
 
-https://github.com/user-attachments/assets/6cf24224-a0fb-4488-9bad-6ed21e289395
+## 🎥 Video Demonstration
 
-    </td>
-  </tr>
-</table>
-
-<table>
-  <tr>
-    <th width="400">Video 2: Reception</th>
-  </tr>
-  <tr>
-    <td>
-
-https://github.com/user-attachments/assets/db6be04e-9f73-46ef-90a6-82b5907f0424
-
-    </td>
-  </tr>
-</table>
+| Video 1: Transmission | Video 2: Reception |
+| :---: | :---: |
+| https://github.com/user-attachments/assets/6cf24224-a0fb-4488-9bad-6ed21e289395 | https://github.com/user-attachments/assets/db6be04e-9f73-46ef-90a6-82b5907f0424 |
