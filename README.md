@@ -3,9 +3,12 @@
 ระบบสื่อสารรหัสมอร์สไร้สายและตรวจจับสิ่งกีดขวางระยะใกล้ด้วย ESP32 จำนวน 2 บอร์ด โดยแบ่งการทำงานเป็นโหนดส่งข้อมูล (**Transmitter Node**) ที่มาพร้อมคีย์บอร์ดเสมือนและเรดาร์อัลตราโซนิก และโหนดรับข้อมูล (**Receiver Node**) ที่ทำหน้าที่เป็น Wi-Fi Access Point ถอดรหัสและแสดงสัญญาณเสียง/ภาพ
 
 ---
-## 🚀 Overview
+## 📖 ภาพรวมของโปรเจกต์ (Project Overview)
 
-ระบบสื่อสารรหัสมอร์สไร้สายและตรวจจับสิ่งกีดขวางระยะใกล้ด้วย ESP32 จำนวน 2 บอร์ด โดยแบ่งการทำงานเป็นโหนดส่งข้อมูล (**Transmitter Node**) ที่มาพร้อมคีย์บอร์ดเสมือนและเรดาร์อัลตราโซนิก และโหนดรับข้อมูล (**Receiver Node**) ที่ทำหน้าที่เป็น Wi-Fi Access Point ถอดรหัสและแสดงสัญญาณเสียง/ภาพ
+โปรเจกต์นี้เป็นการพัฒนาระบบสื่อสารรหัสมอร์สไร้สายแบบสองทิศทางจำลอง และระบบเตือนภัยเรดาร์ระยะใกล้ด้วยไมโครคอนโทรลเลอร์ **ESP32 จำนวน 2 บอร์ด** ทำงานประสานกันผ่านเครือข่าย Wi-Fi ท้องถิ่น (Local Wi-Fi Network) โดยไม่จำเป็นต้องพึ่งพาเราเตอร์หรืออินเทอร์เน็ตภายนอก
+
+* **Node 1 (Transmitter / Client):** ทำหน้าที่เป็นสถานีตรวจจับและควบคุมอินพุต ติดตั้งเซนเซอร์ Ultrasonic HC-SR04 สำหรับสแกนระยะวัตถุแบบเรียลไทม์ควบคู่กับ Potentiometer เพื่อปรับเปลี่ยนระยะความปลอดภัย (Threshold) พร้อมระบบแป้นพิมพ์จำลอง 4 ปุ่ม (Up, Left, Right, Action) ที่แสดงผลบนหน้าจอคู่ (Dual OLED SSD1306 บนบัส I2C0 และ I2C1) เมื่อตรวจพบสิ่งกีดขวางจะทำการยิงรหัส SOS อัตโนมัติ หรือผู้ใช้งานสามารถพิมพ์ข้อความเพื่อส่งรหัสมอร์สผ่าน HTTP Request ได้
+* **Node 2 (Receiver / Access Point):** ทำหน้าที่เป็น Wi-Fi Hotspot ("ESP32-Morse") และ Web Server เมื่อได้รับรหัสผ่านพอร์ต HTTP GET `/send?code=...` ระบบจะตอบรับสัญญาณทันทีแบบ Non-blocking จากนั้นประมวลผลถอดรหัสมอร์ส แสดงผลทีละตัวอักษรบนหน้าจอ OLED ค้างไว้ 1 วินาที พร้อมสั่งขับเสียง Active/Passive Buzzer แยกจังหวะจุดและขีดอย่างแม่นยำ ก่อนจะสรุปข้อความทั้งหมดค้างไว้บนหน้าจอ
 
 ---
 
@@ -127,3 +130,15 @@ flowchart TD
 | Video 1: Transmission | Video 2: Reception |
 | :---: | :---: |
 | https://github.com/user-attachments/assets/db6be04e-9f73-46ef-90a6-82b5907f0424 | https://github.com/user-attachments/assets/6cf24224-a0fb-4488-9bad-6ed21e289395 |
+
+---
+
+## 📑 รายการเอกสารทางเทคนิค (Component Datasheets)
+
+รวบรวม Datasheet สำหรับอุปกรณ์อิเล็กทรอนิกส์และโมดูลทั้งหมดที่ใช้งานในระบบ:
+
+| อุปกรณ์ / โมดูล | ฟังก์ชันในวงจร | เอกสารอ้างอิงทางเทคนิค (Datasheet) |
+| :--- | :--- | :--- |
+| **ESP32 (ESP-WROOM-32)** | ไมโครคอนโทรลเลอร์ Dual-Core สื่อสาร Wi-Fi/BLE | [Espressif ESP-WROOM-32 Datasheet](https://documentation.espressif.com/esp32-wroom-32_datasheet_en.pdf) |
+| **SSD1306** | ตัวควบคุมจอแสดงผลกราฟิก Monochrome 128x64 OLED | [Solomon Systech SSD1306 Datasheet](https://cdn-shop.adafruit.com/datasheets/SSD1306.pdf) |
+| **HC-SR04** | เซนเซอร์วัดระยะทางอัลตราโซนิกความแม่นยำสูง | [SparkFun HC-SR04 User Manual & Datasheet](https://www.alldatasheet.com/datasheet-pdf/view/1132204/ETC2/HCSR04.html) |
