@@ -142,3 +142,14 @@ flowchart TD
 | **ESP32 (ESP-WROOM-32)** | ไมโครคอนโทรลเลอร์ Dual-Core สื่อสาร Wi-Fi/BLE | [Espressif ESP-WROOM-32 Datasheet](https://documentation.espressif.com/esp32-wroom-32_datasheet_en.pdf) |
 | **SSD1306** | ตัวควบคุมจอแสดงผลกราฟิก Monochrome 128x64 OLED | [Solomon Systech SSD1306 Datasheet](https://cdn-shop.adafruit.com/datasheets/SSD1306.pdf) |
 | **HC-SR04** | เซนเซอร์วัดระยะทางอัลตราโซนิกความแม่นยำสูง | [SparkFun HC-SR04 User Manual & Datasheet](https://www.alldatasheet.com/datasheet-pdf/view/1132204/ETC2/HCSR04.html) |
+
+---
+
+
+## 📑 เอกสารและคู่มือการใช้งาน (Documentation & Manual)
+
+สามารถศึกษาคู่มือการใช้งานระบบ รายละเอียดโครงงาน และขั้นตอนการทดสอบแบบเต็มได้ที่เอกสาร Microsoft Sway:
+
+> 🔗 **เข้าสู่คู่มือออนไลน์:** [คลิกที่นี่เพื่อเปิดคู่มือ (ESP32 Morse & Radar System Manual)](https://sway.cloud.microsoft/r6qcSzhI2a8yqh35?ref=Link)
+
+---
